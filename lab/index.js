@@ -80,7 +80,6 @@ router.get('/report', (ctx, next) => {
 });
 
 router.post('/report/*', (ctx, next) => {
-    ctx.body = 'OK';
     const reports = JSON.parse(fs.readFileSync('./data/report.json', {
         encoding: 'utf8',
     }));
@@ -103,6 +102,17 @@ router.post('/report/*', (ctx, next) => {
             encoding: 'utf8',
         });
     }
+
+    const res = ctx.res;
+    ctx.status = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.write(`Hello Hi: ${Date.now()}\n`);
+    return new Promise(resolve => {
+        setTimeout(() => {
+            res.end(`Good Bye: ${Date.now()}`);
+            resolve();
+        }, 200);
+    });
 });
 
 app
