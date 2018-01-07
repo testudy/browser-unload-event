@@ -33,6 +33,9 @@
         window.action = '';
         window.isAsync = true;
         window.isWait = false;
+        window.isWorker = false;
+
+        var worker = new Worker('worker.js');
  
         function wait(ms) {
             var now = new Date().getTime();
@@ -46,18 +49,24 @@
                 type: type,
                 isAsync: window.isAsync,
                 isWait: window.isWait,
+                isWorker: window.isWorker,
                 userAgent: navigator.userAgent,
                 action: window.action || 'reload',
                 timestramp: (new Date()).getTime(),
             };
- 
-            xhr.open('POST', '/report/' + type, window.isAsync);
-            xhr.setRequestHeader('Content-Type', 'text/plain');
-            xhr.send(JSON.stringify(data));
- 
-            if (window.isWait) {
-                wait(1000);
+
+            if (window.isWorker) {
+                worker.postMessage(JSON.stringify(data));
+            } else {
+                xhr.open('POST', '/report/' + type, window.isAsync);
+                xhr.setRequestHeader('Content-Type', 'text/plain');
+                xhr.send(JSON.stringify(data));
+
+                if (window.isWait) {
+                    wait(1000);
+                }
             }
+ 
         }
  
         window.onbeforeunload = function () {
@@ -67,7 +76,9 @@
         window.onpagehide = function () {
             sendXhr('pagehide');
         };
+        */
  
+        /*
         window.onunload = function () {
             sendXhr('unload');
         };
